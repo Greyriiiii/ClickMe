@@ -2,31 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hard Catch the Button Game</title>
+  <title>Fair Catch the Button Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      height: 100vh;
+    html, body {
       margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
+      padding: 0;
+      height: 100%;
       overflow: hidden;
+      font-family: Arial, sans-serif;
     }
 
     #startScreen, #gameContainer, #result {
-      text-align: center;
       position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background: #f0f0f0;
+      text-align: center;
     }
 
     #startScreen {
-      display: block;
-    }
-
-    #gameContainer {
-      display: none;
+      background-color: #fff;
     }
 
     #startButton {
@@ -40,14 +42,14 @@
     }
 
     #trickyButton {
-      padding: 15px 30px;
-      font-size: 18px;
       position: absolute;
+      padding: 15px 30px;
+      font-size: 16px;
       cursor: pointer;
       background-color: #007BFF;
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       transition: all 0.2s ease;
     }
 
@@ -55,13 +57,12 @@
       display: none;
       font-size: 20px;
       color: green;
-      margin-top: 20px;
     }
 
     @media (max-width: 600px) {
       #trickyButton {
-        padding: 5px 10px;
-        font-size: 12px;
+        padding: 6px 12px;
+        font-size: 14px;
       }
     }
 
@@ -75,12 +76,13 @@
   </style>
 </head>
 <body>
+
   <div id="startScreen">
     <h1>🎯 Catch the Button Game</h1>
     <button id="startButton">Start Game</button>
   </div>
 
-  <div id="gameContainer">
+  <div id="gameContainer" style="display:none;">
     <button id="trickyButton">Click Me!</button>
   </div>
 
@@ -88,49 +90,44 @@
 
   <script>
     const startScreen = document.getElementById('startScreen');
-    const startButton = document.getElementById('startButton');
     const gameContainer = document.getElementById('gameContainer');
-    const button = document.getElementById('trickyButton');
+    const startButton = document.getElementById('startButton');
+    const trickyButton = document.getElementById('trickyButton');
     const result = document.getElementById('result');
-    const buttonLabels = ['Tap Me!', 'Catch Me!', 'Nope!', 'Here!', 'Fast!', 'Click!'];
+    const labels = ['Tap Me!', 'Catch Me!', 'Over Here!', 'Nope!', 'Click!', 'Try!'];
 
-    let startTime;
     let gameStarted = false;
+    let startTime;
 
-    function moveAndConfuseButton() {
-      const maxX = window.innerWidth - button.offsetWidth;
-      const maxY = window.innerHeight - button.offsetHeight;
-      const randomX = Math.floor(Math.random() * maxX);
-      const randomY = Math.floor(Math.random() * maxY);
-      const randomLabel = buttonLabels[Math.floor(Math.random() * buttonLabels.length)];
-
-      button.style.left = `${randomX}px`;
-      button.style.top = `${randomY}px`;
-      button.textContent = randomLabel;
-      button.style.animation = 'wiggle 0.3s';
-      setTimeout(() => button.style.animation = '', 300);
+    function getSafePosition(buttonWidth, buttonHeight) {
+      const margin = 20;
+      const maxX = window.innerWidth - buttonWidth - margin;
+      const maxY = window.innerHeight - buttonHeight - margin;
+      const x = Math.floor(Math.random() * (maxX - margin)) + margin;
+      const y = Math.floor(Math.random() * (maxY - margin)) + margin;
+      return { x, y };
     }
 
-    // Hover on desktop
-    button.addEventListener('mouseenter', () => {
-      if (gameStarted) moveAndConfuseButton();
+    function moveButton() {
+      const { offsetWidth: w, offsetHeight: h } = trickyButton;
+      const { x, y } = getSafePosition(w, h);
+      trickyButton.style.left = `${x}px`;
+      trickyButton.style.top = `${y}px`;
+      trickyButton.textContent = labels[Math.floor(Math.random() * labels.length)];
+      trickyButton.style.animation = 'wiggle 0.3s';
+      setTimeout(() => trickyButton.style.animation = '', 300);
+    }
+
+    trickyButton.addEventListener('mouseenter', () => {
+      if (gameStarted && !('ontouchstart' in window)) moveButton();
     });
 
-    // Auto move on mobile after game starts
-    function startAutoMovement() {
-      if ('ontouchstart' in window || navigator.userAgent.toLowerCase().includes('android')) {
-        setInterval(() => {
-          if (gameStarted) moveAndConfuseButton();
-        }, 400);
-      }
-    }
-
-    button.addEventListener('click', () => {
+    trickyButton.addEventListener('click', () => {
       const endTime = Date.now();
-      const elapsed = ((endTime - startTime) / 1000).toFixed(2);
+      const seconds = ((endTime - startTime) / 1000).toFixed(2);
       gameContainer.style.display = 'none';
-      result.style.display = 'block';
-      result.textContent = `🎉 You caught the button in ${elapsed} seconds!`;
+      result.style.display = 'flex';
+      result.textContent = `🎉 You caught it in ${seconds} seconds!`;
       gameStarted = false;
     });
 
@@ -138,9 +135,16 @@
       startScreen.style.display = 'none';
       gameContainer.style.display = 'block';
       result.style.display = 'none';
+      trickyButton.style.display = 'block';
       gameStarted = true;
+      moveButton();
       startTime = Date.now();
-      startAutoMovement();
+
+      if ('ontouchstart' in window || navigator.userAgent.toLowerCase().includes('android')) {
+        setInterval(() => {
+          if (gameStarted) moveButton();
+        }, 400);
+      }
     });
   </script>
 </body>
