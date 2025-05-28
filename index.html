@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Catch the Button Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #gameContainer {
+      text-align: center;
+    }
+
+    #trickyButton {
+      padding: 15px 30px;
+      font-size: 18px;
+      position: absolute;
+      cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    #result {
+      display: none;
+      font-size: 20px;
+      color: green;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <button id="trickyButton">Click Me!</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const button = document.getElementById('trickyButton');
+    const result = document.getElementById('result');
+
+    let startTime;
+
+    // Start the timer when page loads
+    window.onload = () => {
+      startTime = Date.now();
+    };
+
+    // Move button to random position when hovered
+    button.addEventListener('mouseenter', () => {
+      const maxX = window.innerWidth - button.offsetWidth;
+      const maxY = window.innerHeight - button.offsetHeight;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      button.style.left = `${randomX}px`;
+      button.style.top = `${randomY}px`;
+    });
+
+    // On click, stop timer and show result
+    button.addEventListener('click', () => {
+      const endTime = Date.now();
+      const elapsedSeconds = ((endTime - startTime) / 1000).toFixed(2);
+
+      button.style.display = 'none';
+      result.style.display = 'block';
+      result.textContent = `🎉 You caught the button in ${elapsedSeconds} seconds!`;
+    });
+  </script>
+</body>
+</html>
