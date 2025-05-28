@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Catch the Button Game</title>
+  <title>Hard Catch the Button Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -29,7 +29,7 @@
       color: white;
       border: none;
       border-radius: 10px;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
     }
 
     #result {
@@ -39,12 +39,21 @@
       margin-top: 20px;
     }
 
-    /* Smaller button and font on mobile */
+    /* HARDER for mobile users */
     @media (max-width: 600px) {
       #trickyButton {
-        padding: 10px 20px;
-        font-size: 14px;
+        padding: 5px 10px;
+        font-size: 12px;
       }
+    }
+
+    /* Optional animation */
+    @keyframes wiggle {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(2deg); }
+      50% { transform: rotate(-2deg); }
+      75% { transform: rotate(2deg); }
+      100% { transform: rotate(0deg); }
     }
   </style>
 </head>
@@ -57,40 +66,47 @@
   <script>
     const button = document.getElementById('trickyButton');
     const result = document.getElementById('result');
+    const buttonLabels = ['Tap Me!', 'Catch Me!', 'Nope!', 'Here!', 'Fast!', 'Click!'];
 
     let startTime;
 
-    // Start the timer when page loads
     window.onload = () => {
       startTime = Date.now();
     };
 
-    // Move button to random position
-    function moveButtonRandomly() {
+    // Randomly move and change button label
+    function moveAndConfuseButton() {
       const maxX = window.innerWidth - button.offsetWidth;
       const maxY = window.innerHeight - button.offsetHeight;
       const randomX = Math.floor(Math.random() * maxX);
       const randomY = Math.floor(Math.random() * maxY);
+      const randomLabel = buttonLabels[Math.floor(Math.random() * buttonLabels.length)];
+
       button.style.left = `${randomX}px`;
       button.style.top = `${randomY}px`;
+      button.textContent = randomLabel;
+
+      // Add animation
+      button.style.animation = 'wiggle 0.3s';
+      setTimeout(() => {
+        button.style.animation = '';
+      }, 300);
     }
 
-    // Hover effect for desktop
-    button.addEventListener('mouseenter', moveButtonRandomly);
+    // Desktop: move on hover
+    button.addEventListener('mouseenter', moveAndConfuseButton);
 
-    // Make the button move randomly every 800ms on mobile/touchscreens
-    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-      setInterval(moveButtonRandomly, 800);
+    // Mobile or Android: auto-move super fast
+    if ('ontouchstart' in window || navigator.userAgent.toLowerCase().includes('android')) {
+      setInterval(moveAndConfuseButton, 400); // faster!
     }
 
-    // On click, stop timer and show result
     button.addEventListener('click', () => {
       const endTime = Date.now();
       const elapsedSeconds = ((endTime - startTime) / 1000).toFixed(2);
-
       button.style.display = 'none';
       result.style.display = 'block';
-      result.textContent = `🎉 You caught the button in ${elapsedSeconds} seconds!`;
+      result.textContent = `🎯 You caught it in ${elapsedSeconds} seconds!`;
     });
   </script>
 </body>
