@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <title>Fair Catch the Button Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Add inside <body> above <script> -->
+<audio id="bgMusic" src="game-music.mp3" preload="auto"></audio>
+
   <style>
     html, body {
       margin: 0;
@@ -131,21 +134,27 @@
       gameStarted = false;
     });
 
-    startButton.addEventListener('click', () => {
-      startScreen.style.display = 'none';
-      gameContainer.style.display = 'block';
-      result.style.display = 'none';
-      trickyButton.style.display = 'block';
-      gameStarted = true;
-      moveButton();
-      startTime = Date.now();
+startButton.addEventListener('click', () => {
+  const bgMusic = document.getElementById('bgMusic');
+  bgMusic.volume = 0.10;  // Set volume to 15%
+  bgMusic.play().catch(e => console.log('Autoplay blocked:', e));
 
-      if ('ontouchstart' in window || navigator.userAgent.toLowerCase().includes('android')) {
-        setInterval(() => {
-          if (gameStarted) moveButton();
-        }, 400);
-      }
-    });
+  startScreen.style.display = 'none';
+  gameContainer.style.display = 'block';
+  result.style.display = 'none';
+  trickyButton.style.display = 'block';
+  gameStarted = true;
+  moveButton();
+  startTime = Date.now();
+
+  if ('ontouchstart' in window || navigator.userAgent.toLowerCase().includes('android')) {
+    setInterval(() => {
+      if (gameStarted) moveButton();
+    }, 400);
+  }
+});
+
+
   </script>
 </body>
 </html>
