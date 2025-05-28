@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Catch the Button Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -37,6 +38,14 @@
       color: green;
       margin-top: 20px;
     }
+
+    /* Smaller button and font on mobile */
+    @media (max-width: 600px) {
+      #trickyButton {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -56,15 +65,23 @@
       startTime = Date.now();
     };
 
-    // Move button to random position when hovered
-    button.addEventListener('mouseenter', () => {
+    // Move button to random position
+    function moveButtonRandomly() {
       const maxX = window.innerWidth - button.offsetWidth;
       const maxY = window.innerHeight - button.offsetHeight;
       const randomX = Math.floor(Math.random() * maxX);
       const randomY = Math.floor(Math.random() * maxY);
       button.style.left = `${randomX}px`;
       button.style.top = `${randomY}px`;
-    });
+    }
+
+    // Hover effect for desktop
+    button.addEventListener('mouseenter', moveButtonRandomly);
+
+    // Make the button move randomly every 800ms on mobile/touchscreens
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+      setInterval(moveButtonRandomly, 800);
+    }
 
     // On click, stop timer and show result
     button.addEventListener('click', () => {
